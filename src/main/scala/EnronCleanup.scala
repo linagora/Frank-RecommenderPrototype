@@ -8,7 +8,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 /**
   * Created by frank
   */
-object EnronCleanup{
+object EnronCleanup extends App{
 
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
