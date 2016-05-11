@@ -26,8 +26,12 @@ object EnronCleanup extends App{
   // Create the Graph
   val graph = Graph.fromEdges(EnronEdgesRDD, "defaultProperty")
 
+  val usersReceivedMails  : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.In)
+  val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
+
+
+
   // printing tests
   println("num edges = " + graph.numEdges)
   println("num vertices = " + graph.numVertices)
-
 }
