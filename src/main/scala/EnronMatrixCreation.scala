@@ -1,4 +1,4 @@
-import java.util
+import java.util.ArrayList
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
@@ -14,7 +14,6 @@ object EnronMatrixCreation extends App{
   )
 
   type EnronRow = (Int,Int,Int)
-
   def enronRow(time:Int,from:Int,to:Int) : EnronRow = {
     (time,from,to)
   }
@@ -27,9 +26,9 @@ object EnronMatrixCreation extends App{
 
   val EnronReceivedMailRDD: RDD[(Int,Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
   val EnronSentMailRDD : RDD[(Int,Iterable[EnronRow])]= EnronRDD.groupBy(_._3)
-  
+
   //create one row between each mail dent by the user
-  val matrix : util.ArrayList[Array[Int]] = new util.ArrayList[Array[Int]]
+  val matrix : ArrayList[Array[Int]] = new ArrayList[Array[Int]]
   var index = 0
   val userReceivedMail =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
   EnronSentMailRDD.collect().toMap.get(25).get.foreach(sentMail => {
