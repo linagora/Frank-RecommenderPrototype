@@ -10,7 +10,7 @@ object EnronMatrixCreation extends App{
 
   val sc = new SparkContext(new SparkConf()
     .setMaster("local[2]")
-    .setAppName("EnronCleanup")
+    .setAppName("EnronMatrixCreation")
   )
 
   type EnronRow = (Int,Int,Int)
@@ -27,14 +27,14 @@ object EnronMatrixCreation extends App{
 
   val EnronReceivedMailRDD: RDD[(Int,Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
   val EnronSentMailRDD : RDD[(Int,Iterable[EnronRow])]= EnronRDD.groupBy(_._3)
-
+  
   //create one row between each mail dent by the user
-  val matrix = new util.ArrayList[Array[Int]]
+  val matrix : util.ArrayList[Array[Int]] = new util.ArrayList[Array[Int]]
   var index = 0
+  val userReceivedMail =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
   EnronSentMailRDD.collect().toMap.get(25).get.foreach(sentMail => {
     val row: Array[Int] = Array.fill[Int](184)(0)
     val sentMailTime = sentMail._1
-    val userReceivedMail = EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
     while ( sentMailTime > userReceivedMail(index)._1 ) {
       row(userReceivedMail(index)._2)+=1
       index+=1
@@ -42,7 +42,7 @@ object EnronMatrixCreation extends App{
     matrix.add(row)
   })
 
-  println("\n Taille de la matrice " + matrix.size()+"\n")
+  println("\n Taille de la matrice " + matrix.size() + "\n")
 
 
 
