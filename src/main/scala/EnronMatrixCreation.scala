@@ -14,14 +14,12 @@ object EnronMatrixCreation extends App{
   )
 
   type EnronRow = (Int,Int,Int)
-  def enronRow(time:Int,from:Int,to:Int) : EnronRow = {
-    (time,from,to)
-  }
+
 
   val EnronRDD : RDD[EnronRow] = sc.textFile("hdfs://master.spark.com/Enron/TimeFromToDataset/execs.email.linesnum")
     .map(line => {
       val lineArray =  line.split(" ")
-      enronRow(lineArray(0).toInt,lineArray(1).toInt,lineArray(2).toInt)
+      (lineArray(0).toInt,lineArray(1).toInt,lineArray(2).toInt)
     })
 
   val EnronReceivedMailRDD: RDD[(Int,Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
@@ -30,14 +28,16 @@ object EnronMatrixCreation extends App{
   //create one row between each mail dent by the user
   val matrix : ArrayList[Array[Int]] = new ArrayList[Array[Int]]
   var index = 0
-  val userReceivedMail =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
+  val userReceivedMail:Array[EnronRow] =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
+  val row: Array[Int] = Array.fill[Int](185)(0)
   EnronSentMailRDD.collect().toMap.get(25).get.foreach(sentMail => {
-    val row: Array[Int] = Array.fill[Int](184)(0)
     val sentMailTime = sentMail._1
     while ( sentMailTime > userReceivedMail(index)._1 ) {
       row(userReceivedMail(index)._2)+=1
       index+=1
     }
+    row(sentMail._3)-=1
+    row(185)=sentMail._3
     matrix.add(row)
   })
 
