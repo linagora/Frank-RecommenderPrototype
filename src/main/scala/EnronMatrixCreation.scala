@@ -4,7 +4,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
-  * Created by frank on 10/05/16.
+  * Created by frank
   */
 object EnronMatrixCreation extends App{
 
@@ -30,7 +30,7 @@ object EnronMatrixCreation extends App{
   var index = 0
   val userReceivedMail : Array[EnronRow] =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
   val row: Array[Int] = Array.fill[Int](185)(0)
-
+/*
   EnronSentMailRDD.collect().toMap.get(25).get.foreach( sentMail => {
     val sentMailTime = sentMail._1
     while ( sentMailTime > userReceivedMail(index)._1 ) {
@@ -41,6 +41,6 @@ object EnronMatrixCreation extends App{
     row(185)=sentMail._3
     matrix.add(row)
   })
-
+*/
   println("\n Taille de la matrice " + matrix.size() + "\n")
 }
