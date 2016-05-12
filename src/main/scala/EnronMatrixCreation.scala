@@ -28,7 +28,7 @@ object EnronMatrixCreation extends App{
   //create one row between each mail dent by the user
   val matrix : ArrayList[Array[Int]] = new ArrayList[Array[Int]]
   var index = 0
-  val userReceivedMail : Array[EnronRow] =  EnronReceivedMailRDD.collect().toMap.get(25).get.toArray
+  val userReceivedMail =  EnronReceivedMailRDD.collect().toMap.get(25).get//.toArray
   /*
   val row: Array[Int] = Array.fill[Int](185)(0)
 
