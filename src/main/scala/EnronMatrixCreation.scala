@@ -28,14 +28,16 @@ object EnronMatrixCreation extends App{
   //create one row between each mail dent by the user
   val matrix : ArrayList[Array[Int]] = new ArrayList[Array[Int]]
   var index = 0
-  val userReceivedMail: Array[EnronRow]=  EnronReceivedMailRDD.collect().filter(_._1==25)(0)._2.toArray
+  val userReceivedMail: Array[EnronRow]=  EnronReceivedMailRDD.collect().filter(_._2==25).head._2.toArray
   val row: Array[Int] = Array.fill[Int](185)(0)
 
-  EnronSentMailRDD.collect().filter(_._1==25)(0)._2.foreach( sentMail => {
+  EnronSentMailRDD.collect().filter(_._1==25).head._2.foreach( sentMail => {
     val sentMailTime = sentMail._1
-    while ( sentMailTime > userReceivedMail(index)._1 ) {
-      row(userReceivedMail(index)._2)+=1
-      index+=1
+    if (index < userReceivedMail.size ){
+      while (sentMailTime > userReceivedMail(index)._1) {
+        row(userReceivedMail(index)._2) += 1
+        index += 1
+      }
     }
     row(sentMail._3)-=1
     row(185)=sentMail._3
