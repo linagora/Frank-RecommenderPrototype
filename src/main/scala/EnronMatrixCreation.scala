@@ -23,30 +23,36 @@ object EnronMatrixCreation extends App{
       (lineArray(0).toInt,lineArray(1).toInt,lineArray(2).toInt)
     })
 
-  val EnronReceivedMailRDD: RDD[(Int,Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
-  val EnronSentMailRDD : RDD[(Int,Iterable[EnronRow])]= EnronRDD.groupBy(_._3)
+  // Mails sent TO user
+  val EnronReceivedMailRDD: RDD[(Int,Iterable[EnronRow])] = EnronRDD.groupBy(_._3)
+  //mails sent To user 25
+  val userReceivedMail=  EnronReceivedMailRDD.collect().filter(_._1==25).head._2.toArray
+
+  //mails SENT BY (FROM) user
+  val EnronSentMailRDD : RDD[(Int,Iterable[EnronRow])]= EnronRDD.groupBy(_._2)
+  // mails SENT By (FROM) user 25
+  val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1==25).head._2.toArray
+
 
   //create one row between each mail dent by the user
   val matrix : ListBuffer[Array[Int]] = new ListBuffer[Array[Int]]()
   var index = 0
 
-  val userReceivedMail=  EnronReceivedMailRDD.collect().filter(_._1==25).head._2.toArray
 
   val row: Array[Int] = Array.fill[Int](185)(0)
 
-  val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1==25).head._2.toArray
-    for (sentMail <- userSentMails ){
+    for (receivedMail <- userReceivedMail ){
       //userSentMails.foreach( sentMail => {
 
-    val sentMailTime = sentMail._1
+    val receivedmailTime = receivedMail._1
     if (index <= userReceivedMail.size ) {
-      if (sentMailTime > userReceivedMail(index)._1) {
+      if (receivedmailTime < userSentMails(index)._1) {
         row(userReceivedMail(index)._2) += 1
         index += 1
       }
       else {
-        row(sentMail._3) -= 1
-        row(184) = sentMail._3
+        row(userSentMails(index)._2) -= 1
+        row(184) = userSentMails(index)._2
         matrix.append(row)
       }
     }
