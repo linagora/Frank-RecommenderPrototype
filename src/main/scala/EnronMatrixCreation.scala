@@ -39,16 +39,17 @@ object EnronMatrixCreation extends App{
       //userSentMails.foreach( sentMail => {
 
     val sentMailTime = sentMail._1
-    if (index <= userReceivedMail.size ){
-      while (sentMailTime > userReceivedMail(index)._1) {
+    if (index <= userReceivedMail.size ) {
+      if (sentMailTime > userReceivedMail(index)._1) {
         row(userReceivedMail(index)._2) += 1
         index += 1
       }
+      else {
+        row(sentMail._3) -= 1
+        row(184) = sentMail._3
+        matrix.append(row)
+      }
     }
-    row(sentMail._3)-=1
-    row(184)=sentMail._3
-    matrix.append(row)
-
   }
 
 
