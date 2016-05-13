@@ -46,7 +46,7 @@ object EnronMatrixCreation extends App{
       }
     }
     row(sentMail._3)-=1
-    row(185)=sentMail._3
+    row(184)=sentMail._3
     matrix.append(row)
 
   }
