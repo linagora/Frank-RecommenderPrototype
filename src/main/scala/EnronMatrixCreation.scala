@@ -32,7 +32,7 @@ object EnronMatrixCreation extends App{
   val userReceivedMail=  EnronReceivedMailRDD.collect().filter(_._1==25).head._2.toArray
 
   val row: Array[Int] = Array.fill[Int](185)(0)
-/*
+
   EnronSentMailRDD.collect().filter(_._1==25).head._2.foreach( sentMail => {
     val sentMailTime = sentMail._1
     if (index < userReceivedMail.size ){
@@ -45,7 +45,7 @@ object EnronMatrixCreation extends App{
     row(185)=sentMail._3
     matrix.add(row)
   })
-  */
+  
   println("\n Taille de la matrice " + matrix.size() + "\n")
   println("\n Taille de userRceivedMail 25 : " + userReceivedMail.size + "\n")
 
