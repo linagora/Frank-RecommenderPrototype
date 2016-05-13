@@ -34,7 +34,7 @@ object EnronMatrixCreation extends App{
 
   val row: Array[Int] = Array.fill[Int](185)(0)
 
-  val toto = EnronSentMailRDD.collect().filter(_._1==25).head._2
+  val toto = EnronSentMailRDD.collect().filter(_._1==25).head._2.toArray
     toto.foreach( sentMail => {
 
     val sentMailTime = sentMail._1
