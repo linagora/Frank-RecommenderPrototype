@@ -33,7 +33,7 @@ object EnronMatrixCreation extends App{
 
   val row: Array[Int] = Array.fill[Int](185)(0)
 
-  EnronSentMailRDD.collect().filter(_._1==25).head._2.foreach( sentMail => {
+  EnronSentMailRDD.collect().filter(_._1==25).head._2.toArray.foreach( sentMail => {
     /*
     val sentMailTime = sentMail._1
     if (index < userReceivedMail.size ){
