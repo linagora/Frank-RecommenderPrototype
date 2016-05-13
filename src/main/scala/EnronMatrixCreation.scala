@@ -49,7 +49,7 @@ object EnronMatrixCreation extends App{
     row(185)=sentMail._3
     matrix.append(row)
 
-  })
+  }
 
 
   println("\n Taille de la matrice " + matrix.length + "\n")
