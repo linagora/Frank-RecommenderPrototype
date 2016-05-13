@@ -52,11 +52,12 @@ object EnronMatrixCreation extends App{
     }
   }
 
+  val matrixString=matrix.map(_.mkString(" , "))
 
   println("\n Taille de la matrice " + matrix.length + "\n")
   println("\n Taille de userRceivedMail 25 : " + userReceivedMail.size + "\n")
   println("\n Taille de toto : " + userSentMails.size + "\n")
-  println("\n Matrix :\n "+ matrix.mkString("\n"))
+  println("\n Matrix :\n "+ matrixString.mkString("\n"))
 
 
 }
