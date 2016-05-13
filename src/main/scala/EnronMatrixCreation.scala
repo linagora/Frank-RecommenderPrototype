@@ -1,7 +1,8 @@
-import java.util.ArrayList
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+
+import scala.collection.mutable.ListBuffer
 
 /**
   * Created by frank
@@ -26,7 +27,7 @@ object EnronMatrixCreation extends App{
   val EnronSentMailRDD : RDD[(Int,Iterable[EnronRow])]= EnronRDD.groupBy(_._3)
 
   //create one row between each mail dent by the user
-  val matrix : ArrayList[Array[Int]] = new ArrayList[Array[Int]]
+  val matrix : ListBuffer[Array[Int]] = new ListBuffer[Array[Int]]()
   var index = 0
 
   val userReceivedMail=  EnronReceivedMailRDD.collect().filter(_._1==25).head._2.toArray
@@ -37,7 +38,7 @@ object EnronMatrixCreation extends App{
     toto.foreach( sentMail => {
 
     val sentMailTime = sentMail._1
-    if (index < userReceivedMail.size ){
+    if (index <= userReceivedMail.size ){
       while (sentMailTime > userReceivedMail(index)._1) {
         row(userReceivedMail(index)._2) += 1
         index += 1
@@ -45,7 +46,7 @@ object EnronMatrixCreation extends App{
     }
     row(sentMail._3)-=1
     row(185)=sentMail._3
-    matrix.add(row)
+    matrix.append(row)
 
   })
 
