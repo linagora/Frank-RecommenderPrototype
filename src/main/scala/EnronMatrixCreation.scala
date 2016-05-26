@@ -1,6 +1,7 @@
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+import sun.util.calendar.LocalGregorianCalendar.Date
 
 import scala.collection.mutable.ListBuffer
 
@@ -31,9 +32,7 @@ object EnronMatrixCreation extends App{
   //mails SENT BY (FROM) user
   val EnronSentMailRDD: RDD[(Int, Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
 
- // val nbUsers = EnronReceivedMailRDD.collect().toMap.keys.toArray
 
-  //for ( i <- nbUsers) {
     //mails sent To user i
     val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray
     // mails SENT By (FROM) user i
@@ -46,24 +45,19 @@ object EnronMatrixCreation extends App{
     for (receivedMail <- userReceivedMail) {
       //userSentMails.foreach( sentMail => {
 
-      val receivedmailTime = receivedMail._1
+      val receivedmailTime = new Date(receivedMail._1)
       if (index <= userReceivedMail.size) {
-        if (receivedmailTime < userSentMails(index)._1) {
+        if (receivedmailTime.getMillis < new Date(userSentMails(index)._1).getMillis) {
           row(userReceivedMail(index)._2) += 1
         }
         else {
           row(userSentMails(index)._3) -= 1
           row(183) = userSentMails(index)._3
           matrix.append(row)
-          row(183)=0
         }
         index += 1
       }
     }
-  //}
-  //val matrixString=matrix.map(_.mkString(" , "))
-  //println("\n Taille de la matrice " + matrix.length + "\n")
-  //println("\n Matrix :\n "+ matrixString.mkString("\n"))
 
   sc.parallelize(matrix).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResult")
   sc.parallelize(matrix.map(_.mkString(" , "))).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResultString")
