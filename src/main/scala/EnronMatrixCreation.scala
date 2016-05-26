@@ -38,7 +38,7 @@ object EnronMatrixCreation extends App{
     val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray
     // mails SENT By (FROM) user i
     val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 25).head._2.toArray
-  
+
     var index = 0
 
     val row: Array[Int] = Array.fill[Int](184)(0)
@@ -50,13 +50,13 @@ object EnronMatrixCreation extends App{
       if (index <= userReceivedMail.size) {
         if (receivedmailTime < userSentMails(index)._1) {
           row(userReceivedMail(index)._2) += 1
-          index += 1
         }
         else {
-          row(userSentMails(index)._2) -= 1
+          row(userSentMails(index)._3) -= 1
           row(183) = userSentMails(index)._3
           matrix.append(row)
         }
+        index += 1
       }
     }
   //}
