@@ -55,6 +55,7 @@ object EnronMatrixCreation extends App{
           row(userSentMails(index)._3) -= 1
           row(183) = userSentMails(index)._3
           matrix.append(row)
+          row(183)=0
         }
         index += 1
       }
