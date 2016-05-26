@@ -65,4 +65,5 @@ object EnronMatrixCreation extends App{
   //println("\n Matrix :\n "+ matrixString.mkString("\n"))
 
   sc.parallelize(matrix).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResult")
+  sc.parallelize(matrix.map(_.mkString(" , "))).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResultString")
 }
