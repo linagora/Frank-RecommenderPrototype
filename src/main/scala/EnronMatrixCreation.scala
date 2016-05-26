@@ -1,7 +1,8 @@
 
+import java.util.Date
+
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
-import sun.util.calendar.LocalGregorianCalendar.Date
 
 import scala.collection.mutable.ListBuffer
 
@@ -47,7 +48,7 @@ object EnronMatrixCreation extends App{
 
       val receivedmailTime = new Date(receivedMail._1)
       if (index <= userReceivedMail.size) {
-        if (receivedmailTime.getMillis < new Date(userSentMails(index)._1).getMillis) {
+        if (receivedmailTime.before(new Date(userSentMails(index)._1))) {
           row(userReceivedMail(index)._2) += 1
         }
         else {
