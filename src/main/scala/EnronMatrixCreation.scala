@@ -31,7 +31,7 @@ object EnronMatrixCreation extends App{
   //mails SENT BY (FROM) user
   val EnronSentMailRDD: RDD[(Int, Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
 
-  val nbUsers = EnronReceivedMailRDD.collect().toMap.keys.toArray
+ // val nbUsers = EnronReceivedMailRDD.collect().toMap.keys.toArray
 
   //for ( i <- nbUsers) {
     //mails sent To user i
@@ -41,7 +41,7 @@ object EnronMatrixCreation extends App{
 
     var index = 0
 
-    val row: Array[Int] = Array.fill[Int](184)(0)
+    val row: Array[Int] = Array.fill[Int](185)(0)
 
     for (receivedMail <- userReceivedMail) {
       //userSentMails.foreach( sentMail => {
