@@ -32,19 +32,16 @@ object EnronMatrixCreation extends App{
   val EnronSentMailRDD: RDD[(Int, Iterable[EnronRow])] = EnronRDD.groupBy(_._2)
 
   val nbUsers = EnronReceivedMailRDD.collect().toMap.keys.toArray
-  for ( i <- nbUsers) {
+
+  //for ( i <- nbUsers) {
     //mails sent To user i
-    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == i).head._2.toArray
-
-
+    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray
     // mails SENT By (FROM) user i
-    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == i).head._2.toArray
-
+    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 25).head._2.toArray
 
     var index = 0
 
-
-    val row: Array[Int] = Array.fill[Int](185)(0)
+    val row: Array[Int] = Array.fill[Int](184)(0)
 
     for (receivedMail <- userReceivedMail) {
       //userSentMails.foreach( sentMail => {
@@ -57,22 +54,15 @@ object EnronMatrixCreation extends App{
         }
         else {
           row(userSentMails(index)._2) -= 1
-          row(184) = userSentMails(index)._3
+          row(183) = userSentMails(index)._3
           matrix.append(row)
         }
       }
     }
-
-    //println("\n Taille de userRceivedMail 25 : " + userReceivedMail.size + "\n")
-    //println("\n Taille de toto : " + userSentMails.size + "\n")
-
-
-  }
+  //}
   //val matrixString=matrix.map(_.mkString(" , "))
   //println("\n Taille de la matrice " + matrix.length + "\n")
   //println("\n Matrix :\n "+ matrixString.mkString("\n"))
 
   sc.parallelize(matrix).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResult")
-
-
 }
