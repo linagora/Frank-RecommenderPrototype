@@ -35,13 +35,13 @@ object EnronMatrixCreation extends App{
 
   //for ( i <- nbUsers) {
     //mails sent To user i
-    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray
+    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 183).head._2.toArray
     // mails SENT By (FROM) user i
-    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 25).head._2.toArray
+    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 183).head._2.toArray
 
     var index = 0
 
-    val row: Array[Int] = Array.fill[Int](185)(0)
+    val row: Array[Int] = Array.fill[Int](184)(0)
 
     for (receivedMail <- userReceivedMail) {
       //userSentMails.foreach( sentMail => {
