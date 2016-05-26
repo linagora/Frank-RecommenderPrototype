@@ -35,9 +35,9 @@ object EnronMatrixCreation extends App{
 
 
     //mails sent To user i
-    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray
+    val userReceivedMail = EnronReceivedMailRDD.collect().filter(_._1 == 25).head._2.toArray.sortBy(_._1)
     // mails SENT By (FROM) user i
-    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 25).head._2.toArray
+    val userSentMails: Array[EnronRow] = EnronSentMailRDD.collect().filter(_._1 == 25).head._2.toArray.sortBy(_._1)
 
     var index = 0
 
@@ -63,3 +63,5 @@ object EnronMatrixCreation extends App{
   sc.parallelize(matrix).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResult")
   sc.parallelize(matrix.map(_.mkString(" , "))).saveAsTextFile("hdfs://master.spark.com/Enron/MatrixResultString")
 }
+
+//Append le dernier row a chaque fois au lieu d'append chaque row 1 par 1
