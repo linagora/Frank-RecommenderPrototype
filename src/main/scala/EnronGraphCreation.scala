@@ -25,11 +25,11 @@ object EnronGraphCreation extends App{
     val toLine = mail.split("\n").filter(line=> line.contains("To: "))
     val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
     val fromLine = mail.split("\n").filter(line=> line.contains("From: "))
-    val from = fromLine.head.split(" ")(1)
+    val from = fromLine.head.split(" ")(1).hashCode
     val toArray = toLine.head.split("To: ")(1).split(",")
     val ccArray = ccLine.head.split("cc: ")(1).split(",")
 
-    val listEdges = new ListBuffer[(String,String,String)]
+    val listEdges = new ListBuffer[(Int,String,String)]
     for (to <- toArray){
       listEdges.append((from,to,"to"))
     }
@@ -40,7 +40,7 @@ object EnronGraphCreation extends App{
     listEdges.toList
   })
 
-  val edgesRDD = tripleRDD.map(triple => Edge(triple._1.hashCode,triple._2.hashCode,triple._3))
+  val edgesRDD = tripleRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
 
   // Create the Graph
   val graph = Graph.fromEdges(edgesRDD, "defaultProperty")
