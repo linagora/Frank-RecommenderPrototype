@@ -17,9 +17,9 @@ object EnronGraphCreation extends App{
       .setAppName("EnronGraphCreation")
     )
 
-  val sentMails = sc.wholeTextFiles("\"hdfs://master.spark.com/Enron/maildir/allen-p/_sent_mail/*")
+  val sentMails = sc.wholeTextFiles("\"hdfs://master.spark.com/Enron/maildir/allen-p/_sent_mail/102.")
 
-  println("il y a "+sentMails.count()+" mail envoyés par allen-p")
+  println("\n il y a "+sentMails.count()+" mail envoyés par allen-p \n")
 
 
 }
