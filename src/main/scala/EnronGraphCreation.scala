@@ -51,10 +51,11 @@ object EnronGraphCreation extends App{
 
 
   // printing tests
-  println("\nnum edges = " + graph.numEdges +"\n")
-  println("\nnum vertices = " + graph.numVertices+"\n")
+
 
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
+  println("\nnum edges = " + graph.numEdges +"\n")
+  println("\nnum vertices = " + graph.numVertices+"\n")
 
 
 }
