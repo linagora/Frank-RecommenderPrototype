@@ -21,7 +21,7 @@ object EnronGraphCreation extends App{
 
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
 var nbUsers =0
-  val tripleRDD = sentMails.flatMap(mail=>{
+  val tripleRDD = sentMails.collect().flatMap(mail=>{
     val toLine = mail.split("\n").filter(line=> line.contains("To: "))
     val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
     val fromLine = mail.split("\n").filter(line=> line.contains("From: "))
@@ -40,7 +40,7 @@ var nbUsers =0
     listEdges.toList
   })
 
-  val edgesRDD = tripleRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
+  val edgesRDD = sc.parallelize(tripleRDD).map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
 
   // Create the Graph
   val graph = Graph.fromEdges(edgesRDD, "defaultProperty")
