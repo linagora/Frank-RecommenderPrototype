@@ -36,7 +36,7 @@ val nbUsers = new ListBuffer[String]
     for (cc <- ccArray){
       listEdges.append((from,cc,"cc"))
     }
-  if (nbUsers.contains(fromLine.head.split(" ")(1))){
+  if (!nbUsers.contains(fromLine.head.split(" ")(1))){
     nbUsers.append(fromLine.head.split(" ")(1))
   }
 
