@@ -26,6 +26,7 @@ val nbUsers = new ListBuffer[Int]
     val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
     val fromLine = mail.split("\n").filter(line=> line.contains("From: "))
     val from = fromLine.head.split(" ")(1).hashCode
+    // TODO : Get only the mail using regexp for TO and CC
     val toArray = toLine.head.split("To: ")(1).split(",").map(_.hashCode)
     val ccArray = ccLine.head.split("cc: ")(1).split(",").map(_.hashCode)
 
@@ -63,7 +64,7 @@ val nbUsers = new ListBuffer[Int]
   println("\nnum vertices = " + graph.numVertices+"\n")
   println("\nthere are "+ nbUsers.size+ " users in this dataset\n")
 
-  println("\nexample: \n"+usersSentMails.collect().head.toString())
+  println("\nexample: \n"+usersSentMails.collect().head._1.toString+" , "+ usersSentMails.collect().head._2.mkString(";"))
 
 
 }
