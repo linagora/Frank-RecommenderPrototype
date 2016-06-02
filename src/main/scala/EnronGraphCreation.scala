@@ -63,5 +63,7 @@ val nbUsers = new ListBuffer[Int]
   println("\nnum vertices = " + graph.numVertices+"\n")
   println("\nthere are "+ nbUsers.size+ " users in this dataset\n")
 
+  println("\nexample: \n"+usersSentMails.collect().head.toString()
+
 
 }
