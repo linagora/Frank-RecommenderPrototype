@@ -20,7 +20,7 @@ object EnronGraphCreation extends App{
     )
 
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
-var nbUsers =0
+val nbUsers = new ListBuffer[String]
   val tripleRDD = sentMails.collect().flatMap(mail=>{
     val toLine = mail.split("\n").filter(line=> line.contains("To: "))
     val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
@@ -36,8 +36,11 @@ var nbUsers =0
     for (cc <- ccArray){
       listEdges.append((from,cc,"cc"))
     }
-    nbUsers+=1
-    listEdges.toList
+  if (nbUsers.contains(fromLine.head.split(" ")(1))){
+    nbUsers.append(fromLine.head.split(" ")(1))
+  }
+
+  listEdges.toList
   })
 
   val edgesRDD = sc.parallelize(tripleRDD).map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
@@ -54,7 +57,7 @@ var nbUsers =0
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
   println("\nnum edges = " + graph.numEdges +"\n")
   println("\nnum vertices = " + graph.numVertices+"\n")
-  println("\nthere are "+ nbUsers+ " users in this dataset\n")
+  println("\nthere are "+ nbUsers.size+ " users in this dataset\n")
 
 
 }
