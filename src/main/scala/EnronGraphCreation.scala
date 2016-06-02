@@ -20,7 +20,7 @@ object EnronGraphCreation extends App{
     )
 
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
-
+var nbUsers =0
   val tripleRDD = sentMails.flatMap(mail=>{
     val toLine = mail.split("\n").filter(line=> line.contains("To: "))
     val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
@@ -36,7 +36,7 @@ object EnronGraphCreation extends App{
     for (cc <- ccArray){
       listEdges.append((from,cc,"cc"))
     }
-
+    nbUsers+=1
     listEdges.toList
   })
 
@@ -51,11 +51,10 @@ object EnronGraphCreation extends App{
 
 
   // printing tests
-
-
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
   println("\nnum edges = " + graph.numEdges +"\n")
   println("\nnum vertices = " + graph.numVertices+"\n")
+  println("\nthere are "+ nbUsers+ " users in this dataset\n")
 
 
 }
