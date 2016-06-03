@@ -4,6 +4,8 @@ import com.twitter.chill.Tuple3Serializer
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+import scala.util.matching.Regex
+
 
 import scala.collection.mutable.ListBuffer
 
@@ -13,22 +15,25 @@ import scala.collection.mutable.ListBuffer
 object EnronGraphCreation extends App{
 
 
-    // New SparkContext
-    val sc = new SparkContext(new SparkConf()
-      .setMaster("local[2]")
-      .setAppName("EnronGraphCreation")
-    )
+  // New SparkContext
+  val sc = new SparkContext(new SparkConf()
+    .setMaster("local[2]")
+    .setAppName("EnronGraphCreation")
+  )
 
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
-val nbUsers = new ListBuffer[Int]
+  val nbUsers = new ListBuffer[Int]
+
+  // RFC Standard
+  val mailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])".r
+
   val tripleRDD = sentMails.collect().flatMap(mail=>{
-    val toLine = mail.split("\n").filter(line=> line.contains("To: "))
-    val ccLine = mail.split("\n").filter(line=> line.contains("cc: "))
-    val fromLine = mail.split("\n").filter(line=> line.contains("From: "))
-    val from = fromLine.head.split(" ")(1).hashCode
-    // TODO : Get only the mail using regexp for TO and CC
-    val toArray = toLine.head.split("To: ")(1).split(",").map(_.hashCode)
-    val ccArray = ccLine.head.split("cc: ")(1).split(",").map(_.hashCode)
+    val toLine = mail.split("\n").filter(line=> line.contains("To: ")).head
+    val ccLine = mail.split("\n").filter(line=> line.contains("cc: ")).head
+    val fromLine = mail.split("\n").filter(line=> line.contains("From: ")).head
+    val from : Int = (mailPattern findFirstIn fromLine).hashCode()
+    val toArray : Array[Int] = (mailPattern findAllIn toLine).toArray.map(_.hashCode)
+    val ccArray : Array[Int] = (mailPattern findAllIn ccLine).toArray.map(_.hashCode)
 
     val listEdges = new ListBuffer[(Int,Int,String)]
     for (to <- toArray){
@@ -37,11 +42,11 @@ val nbUsers = new ListBuffer[Int]
     for (cc <- ccArray){
       listEdges.append((from,cc,"cc"))
     }
-  if (!nbUsers.contains(from)){
-    nbUsers.append(from)
-  }
+    if (!nbUsers.contains(from)){
+      nbUsers.append(from)
+    }
 
-  listEdges.toList
+    listEdges.toList
   })
 
   // Replace arc string by count
