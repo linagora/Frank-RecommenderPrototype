@@ -68,8 +68,7 @@ object EnronGraphCreation extends App{
   println("\nnum edges = " + graph.numEdges +"\n")
   println("\nnum vertices = " + graph.numVertices+"\n")
   println("\nthere are "+ nbUsers.size+ " users in this dataset\n")
-
-  println("\nexample: \n"+usersSentMails.collect().head._1.toString+" , "+ usersSentMails.collect().head._2.mkString(";"))
+  println("\nthere are : "+usersSentMails.count()+" users that sent emails\n")
 
 
 }
