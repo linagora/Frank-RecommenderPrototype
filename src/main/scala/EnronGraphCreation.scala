@@ -36,14 +36,14 @@ object EnronGraphCreation extends App{
     val ccArray : Array[Int] = (mailPattern findAllIn ccLine).toArray.map(_.hashCode)
 
     val listEdges = new ListBuffer[(Int,Int,String)]
-    for (to <- toArray){
-      listEdges.append((from.hashCode(),to,"to"))
-    }
-    for (cc <- ccArray){
-      listEdges.append((from.hashCode(),cc,"cc"))
-    }
-    if (!nbUsers.contains(from)){
+    if (!nbUsers.contains(from)) {
       nbUsers.append(from)
+      for (to <- toArray) {
+        listEdges.append((nbUsers.indexOf(from), to, "to"))
+      }
+      for (cc <- ccArray) {
+        listEdges.append((nbUsers.indexOf(from), cc, "cc"))
+      }
     }
 
     listEdges.toList
