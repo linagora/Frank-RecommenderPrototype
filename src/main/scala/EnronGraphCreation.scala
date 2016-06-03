@@ -69,14 +69,17 @@ object EnronGraphCreation extends App{
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
 
-
+val receivedmailcount=usersReceivedMails.count()
+  val sentmailcount=usersSentMails.count()
+  val numEdged = graph.numEdges
+    val numVertices = graph.numVertices
   // printing tests
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
-  println("\nnum edges = " + graph.numEdges +"\n")
-  println("\nnum vertices = " + graph.numVertices+"\n")
+  println("\nnum edges = " + numEdged +"\n")
+  println("\nnum vertices = " +numVertices +"\n")
   //println("\nthere are "+ fromUsers.size + " users in this dataset\n")
-  println("\nthere are : "+usersSentMails.count()+" users that sent emails\n")
-  println("\nthere are : "+usersReceivedMails.count()+" users that received emails\n")
+  println("\nthere are : "+sentmailcount+" users that sent emails\n")
+  println("\nthere are : "+receivedmailcount+" users that received emails\n")
 
   //println(fromUsers.mkString("\n"))
   println("\nfromUsers count :"+fromUsers.length)
