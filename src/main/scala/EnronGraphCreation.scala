@@ -35,11 +35,15 @@ object EnronGraphCreation extends App{
     val fromLine = mail.split("\n").filter(line=> line.contains("From: ")).head
     val from : String = (mailPattern findFirstIn fromLine).get
     val toArray : Array[String] = (mailPattern findAllIn toLine).toArray.map(toUser=>{
-      toUsers.append(toUser)
+      if (!toUsers.contains(toUser)) {
+        toUsers.append(toUser)
+      }
       toUser
     })
     val ccArray : Array[String] = (mailPattern findAllIn ccLine).toArray.map(ccUser=>{
-      ccUsers.append(ccUser)
+      if (!ccUsers.contains(ccUser)) {
+        ccUsers.append(ccUser)
+      }
       ccUser
     })
     val listEdges = new ListBuffer[(Int,Int,String)]
