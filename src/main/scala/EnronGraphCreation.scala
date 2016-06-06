@@ -77,7 +77,6 @@ object EnronGraphCreation extends App{
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
 
-  sc.parallelize(fromUsers.toSeq).saveAsTextFile("hdfs://master.spark.com/Enron/fromUsersFile")
   val receivedmailcount=usersReceivedMails.count()
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
