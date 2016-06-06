@@ -36,23 +36,27 @@ object EnronGraphCreation extends App{
     val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
     val fromLine = mail.split("\n").filter(line => line.contains("From: ")).head
     val from: String = (mailPattern findFirstIn fromLine).get
-    val toArray: Array[String] = (mailPattern findAllIn toLine).toArray.map(toUser => {
-      if (!users.contains(toUser)) {
-        users.append(toUser)
-      }
-      toUser
-    })
     if (!users.contains(from)) {
       users.append(from)
     }
     if (!fromUsers.contains(from)) {
       fromUsers.append(from)
     }
+    // First let's take care of the To section
+    // We add users to the list if they are not already in
+    val toArray: Array[String] = (mailPattern findAllIn toLine).toArray.map(toUser => {
+      if (!users.contains(toUser)) {
+        users.append(toUser)
+      }
+      toUser
+    })
+    // If there is just 1 to, make a direct link between from and to
     if (toArray.length<2) {
       for (to <- toArray) {
         listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
       }
     }
+      // else create an anonymous node and make a link from-node, node-tos
     else{
       if (!anonymousGroup.contains(toArray)){
         anonymousGroup.append(toArray)
@@ -62,17 +66,20 @@ object EnronGraphCreation extends App{
         listEdges.append((anonymousGroup.indexOf(toArray)+10000, users.indexOf(to), "to"))
       }
     }
+    // We take care of the CC section
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray.map(ccUser => {
       if (!users.contains(ccUser)) {
         users.append(ccUser)
       }
       ccUser
     })
+    // If there is just 1 to, make a direct link between from and cc
     if (ccArray.length<2) {
       for (cc <- ccArray) {
         listEdges.append((users.indexOf(from), users.indexOf(cc), "cc"))
       }
     }
+    // else create an anonymous node and make a link from-node, node-ccs
     else{
       if (!anonymousGroup.contains(ccArray)){
         anonymousGroup.append(ccArray)
@@ -103,16 +110,13 @@ object EnronGraphCreation extends App{
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
   val numVertices = graph.numVertices
-
+  val triple = graph.triplets.collect()(38)
   // printing tests
-  println("\n il y a "+sentMails.count()+" mail envoyés \n")
-  println("\nnum edges = " + numEdged +"\n")
-  println("\nnum vertices = " +numVertices +"\n")
-  //println("\nthere are "+ fromUsers.size + " users in this dataset\n")
-  println("\nthere are : "+sentmailcount+" users that sent emails\n")
-  println("\nthere are : "+receivedmailcount+" users that received emails\n")
+ println("\n Example de triplet : "+triple.toString()+"\n")
 
   //println(fromUsers.mkString("\n"))
   println("\nUsers count :"+users.length+"\n")
   println("\nFrom users count :"+fromUsers.length+"\n")
+
+  sc.stop()
 }
