@@ -29,9 +29,9 @@ object EnronGraphCreation extends App{
   val mailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])".r
 
   val tripleRDD = sentMails.collect().flatMap(f = mail => {
-    val toLine = mail.split("\n").filter(line => line.contains("^To: ".r)).head
-    val ccLine = mail.split("\n").filter(line => line.contains("^cc: ".r)).head
-    val fromLine = mail.split("\n").filter(line => line.contains("^From: ".r)).head
+    val toLine = mail.split("\n").filter(line => line.contains("To: ")).head
+    val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
+    val fromLine = mail.split("\n").filter(line => line.contains("From: ")).head
     val from: String = (mailPattern findFirstIn fromLine).get
     val toArray: Array[String] = (mailPattern findAllIn toLine).toArray.map(toUser => {
       if (!users.contains(toUser)) {
