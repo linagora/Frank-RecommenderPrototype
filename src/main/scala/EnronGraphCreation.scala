@@ -23,6 +23,7 @@ object EnronGraphCreation extends App{
 
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val users = new ListBuffer[String]
+  val fromUsers = new ListBuffer[String]
 
 
   // RFC Standard
@@ -49,6 +50,9 @@ object EnronGraphCreation extends App{
     if (!users.contains(from)) {
       users.append(from)
     }
+    if (!fromUsers.contains(from)){
+      fromUsers.append(from)
+    }
     for (to <- toArray) {
       listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
     }
@@ -73,10 +77,11 @@ object EnronGraphCreation extends App{
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
 
-val receivedmailcount=usersReceivedMails.count()
+  sc.parallelize(fromUsers.toArray).saveAsTextFile("hdfs://master.spark.com/Enron/fromUsersFile")
+  val receivedmailcount=usersReceivedMails.count()
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
-    val numVertices = graph.numVertices
+  val numVertices = graph.numVertices
   // printing tests
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
   println("\nnum edges = " + numEdged +"\n")
@@ -87,7 +92,5 @@ val receivedmailcount=usersReceivedMails.count()
 
   //println(fromUsers.mkString("\n"))
   println("\nUsers count :"+users.length+"\n")
-
-
-
+  println("\nFrom users count :"+fromUsers.length+"\n")
 }
