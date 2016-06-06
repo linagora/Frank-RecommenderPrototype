@@ -28,8 +28,9 @@ object EnronGraphCreation extends App{
 
   // RFC Standard
   val mailPattern = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])".r
+  val listEdges = new ListBuffer[(Int, Int, String)]
 
-  val tripleRDD = sentMails.collect().flatMap(f = mail => {
+  sentMails.collect().foreach(f = mail => {
     val toLine = mail.split("\n").filter(line => line.contains("To: ")).head
     val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
     val fromLine = mail.split("\n").filter(line => line.contains("From: ")).head
@@ -46,7 +47,6 @@ object EnronGraphCreation extends App{
       }
       ccUser
     })
-    val listEdges = new ListBuffer[(Int, Int, String)]
     if (!users.contains(from)) {
       users.append(from)
     }
@@ -59,13 +59,12 @@ object EnronGraphCreation extends App{
     for (cc <- ccArray) {
       listEdges.append((users.indexOf(from), users.indexOf(cc), "cc"))
     }
-
-
-    listEdges.toList
   })
 
+  val tripleRDD : RDD[(Int,Int,String)] = sc.parallelize(listEdges)
+
   // Replace arc string by count
-  val triplesArcCountRDD:RDD[(Int,Int,Int)] = sc.parallelize(tripleRDD).map(triple =>(triple._1+""+triple._2,(triple._1,triple._2,1))).reduceByKey((triple1,triple2)=>(triple1._1,triple1._2,triple1._3+triple2._3)).map(_._2)
+  val triplesArcCountRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1+""+triple._2,(triple._1,triple._2,1))).reduceByKey((triple1,triple2)=>(triple1._1,triple1._2,triple1._3+triple2._3)).map(_._2)
 
   //Create Triples Edges
   val edgesRDD = triplesArcCountRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
@@ -81,7 +80,7 @@ object EnronGraphCreation extends App{
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
   val numVertices = graph.numVertices
-  val triple = graph.triplets.collect().head
+
   // printing tests
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
   println("\nnum edges = " + numEdged +"\n")
@@ -93,5 +92,4 @@ object EnronGraphCreation extends App{
   //println(fromUsers.mkString("\n"))
   println("\nUsers count :"+users.length+"\n")
   println("\nFrom users count :"+fromUsers.length+"\n")
-  println("\nExample de triplet : "+triple.toString())
 }
