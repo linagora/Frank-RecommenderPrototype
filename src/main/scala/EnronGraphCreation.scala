@@ -24,6 +24,7 @@ object EnronGraphCreation extends App{
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
+  val anonymousGroup = new ListBuffer[Array[String]]
 
 
   // RFC Standard
@@ -41,23 +42,45 @@ object EnronGraphCreation extends App{
       }
       toUser
     })
+    if (!users.contains(from)) {
+      users.append(from)
+    }
+    if (!fromUsers.contains(from)) {
+      fromUsers.append(from)
+    }
+    if (toArray.length<2) {
+      for (to <- toArray) {
+        listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
+      }
+    }
+    else{
+      if (!anonymousGroup.contains(toArray)){
+        anonymousGroup.append(toArray)
+      }
+      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(toArray)+10000,"to"))
+      for (to <- toArray) {
+        listEdges.append((anonymousGroup.indexOf(toArray)+10000, users.indexOf(to), "to"))
+      }
+    }
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray.map(ccUser => {
       if (!users.contains(ccUser)) {
         users.append(ccUser)
       }
       ccUser
     })
-    if (!users.contains(from)) {
-      users.append(from)
+    if (ccArray.length<2) {
+      for (cc <- ccArray) {
+        listEdges.append((users.indexOf(from), users.indexOf(cc), "cc"))
+      }
     }
-    if (!fromUsers.contains(from)){
-      fromUsers.append(from)
-    }
-    for (to <- toArray) {
-      listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
-    }
-    for (cc <- ccArray) {
-      listEdges.append((users.indexOf(from), users.indexOf(cc), "cc"))
+    else{
+      if (!anonymousGroup.contains(ccArray)){
+        anonymousGroup.append(ccArray)
+      }
+      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(ccArray)+10000,"to"))
+      for (cc <- ccArray) {
+        listEdges.append((anonymousGroup.indexOf(ccArray)+10000, users.indexOf(cc), "to"))
+      }
     }
   })
 
