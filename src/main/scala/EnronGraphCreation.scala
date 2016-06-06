@@ -82,6 +82,7 @@ object EnronGraphCreation extends App{
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
   val numVertices = graph.numVertices
+  val triple = graph.triplets.collect().head
   // printing tests
   println("\n il y a "+sentMails.count()+" mail envoyés \n")
   println("\nnum edges = " + numEdged +"\n")
@@ -93,4 +94,5 @@ object EnronGraphCreation extends App{
   //println(fromUsers.mkString("\n"))
   println("\nUsers count :"+users.length+"\n")
   println("\nFrom users count :"+fromUsers.length+"\n")
+  println("\nExample de triplet : "+triple.toString())
 }
