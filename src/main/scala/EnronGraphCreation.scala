@@ -2,6 +2,7 @@ import java.util.UUID
 
 import com.twitter.chill.Tuple3Serializer
 import org.apache.spark.graphx._
+import org.apache.spark.graphx.lib.ShortestPaths
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 import scala.util.matching.Regex
@@ -93,8 +94,8 @@ object EnronGraphCreation extends App{
 
   val tripleRDD : RDD[(Int,Int,String)] = sc.parallelize(listEdges)
 
-  // Replace arc string by count
-  val triplesArcCountRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1+""+triple._2,(triple._1,triple._2,1))).reduceByKey((triple1,triple2)=>(triple1._1,triple1._2,triple1._3+triple2._3)).map(_._2)
+  // Replace arc string by count we use -1 to get shortest path to
+  val triplesArcCountRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1+""+triple._2,(triple._1,triple._2,-1))).reduceByKey((triple1,triple2)=>(triple1._1,triple1._2,triple1._3+triple2._3)).map(_._2)
 
   //Create Triples Edges
   val edgesRDD = triplesArcCountRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
@@ -106,13 +107,17 @@ object EnronGraphCreation extends App{
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
 
+  // ShortestPaths to
+  val result = ShortestPaths.run(graph, Seq(users.indices))
+
+
+  //printings
   val receivedmailcount=usersReceivedMails.count()
   val sentmailcount=usersSentMails.count()
   val numEdged = graph.numEdges
   val numVertices = graph.numVertices
   val triple = graph.triplets.collect()(38)
-  // printing tests
- println("\n Example de triplet : "+triple.toString()+"\n")
+  println("\n Example de triplet : "+triple.toString()+"\n")
 
   //println(fromUsers.mkString("\n"))
   println("\nUsers count :"+users.length+"\n")
