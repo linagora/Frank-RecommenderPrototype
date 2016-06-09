@@ -97,7 +97,8 @@ object EnronGraphCreation extends App{
   // Replace arc string by count we use -1 to get shortest path to
   val triplesArcCountRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1+""+triple._2,(triple._1,triple._2,-1))).reduceByKey((triple1,triple2)=>(triple1._1,triple1._2,triple1._3+triple2._3)).map(_._2)
 
-  val usersRDD: RDD[(VertexId, (String))] = sc.parallelize(users.map(mail => (users.indexOf(mail),users(users.indexOf(mail)))).toArray)
+  val userArray = users.map(mail => (users.indexOf(mail),users(users.indexOf(mail)))).toArray
+  val usersRDD: RDD[(VertexId, (String))] = sc.parallelize(userArray)
 
   //Create Triples Edges
   val edgesRDD = triplesArcCountRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
