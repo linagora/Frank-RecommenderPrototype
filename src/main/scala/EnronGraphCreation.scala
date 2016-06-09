@@ -109,7 +109,7 @@ object EnronGraphCreation extends App{
 
   // ShortestPaths to
   val currentUser = 25
-  val dest = 93
+  val dest = 26
   val result = ShortestPaths.run(graph, Seq(currentUser))
   val shortestPath = result               // result is a graph
     .vertices                             // we get the vertices RDD
