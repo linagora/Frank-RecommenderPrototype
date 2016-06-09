@@ -108,20 +108,27 @@ object EnronGraphCreation extends App{
 
 
   // ShortestPaths to
-  val result = ShortestPaths.run(graph, Seq(users.indices))
-
+  val currentUser = 25
+  val dest = 183
+  val result = ShortestPaths.run(graph, Seq(currentUser))
+  val shortestPath = result               // result is a graph
+    .vertices                             // we get the vertices RDD
+    .filter({case(vId, _) => vId == currentUser})  // we filter to get only the shortest path from v1
+    .first                                // there's only one value
+    ._2                                   // the result is a tuple (v1, Map)
+    .get(dest)
 
   //printings
-  val receivedmailcount=usersReceivedMails.count()
-  val sentmailcount=usersSentMails.count()
-  val numEdged = graph.numEdges
-  val numVertices = graph.numVertices
-  val triple = graph.triplets.collect()(38)
-  println("\n Example de triplet : "+triple.toString()+"\n")
+  //val receivedmailcount=usersReceivedMails.count()
+  //val sentmailcount=usersSentMails.count()
+  //val numEdged = graph.numEdges
+  //val numVertices = graph.numVertices
+  //val triple = graph.triplets.collect()(38)
+  //println("\n Example de triplet : "+triple.toString()+"\n")
 
   //println(fromUsers.mkString("\n"))
-  println("\nUsers count :"+users.length+"\n")
-  println("\nFrom users count :"+fromUsers.length+"\n")
-
+  //println("\nUsers count :"+users.length+"\n")
+  //println("\nFrom users count :"+fromUsers.length+"\n")
+  println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
   sc.stop()
 }
