@@ -108,8 +108,8 @@ object EnronGraphCreation extends App{
 
 
   // ShortestPaths to
-  val currentUser = users.indexOf("phillip.allen@enron.com")
-  val dest = users.indexOf("tim.belden@enron.com")
+  val currentUser = users.indexOf("tim.belden@enron.com")
+  val dest = users.indexOf("phillip.allen@enron.com")
   val result = ShortestPaths.run(graph, Seq(currentUser))
   val shortestPath = result               // result is a graph
     .vertices                             // we get the vertices RDD
