@@ -109,7 +109,7 @@ object EnronGraphCreation extends App{
 
   // ShortestPaths to
   val currentUser = 25
-  val dest = 183
+  val dest = 93
   val result = ShortestPaths.run(graph, Seq(currentUser))
   val shortestPath = result               // result is a graph
     .vertices                             // we get the vertices RDD
@@ -119,16 +119,6 @@ object EnronGraphCreation extends App{
     .get(dest)
 
   //printings
-  //val receivedmailcount=usersReceivedMails.count()
-  //val sentmailcount=usersSentMails.count()
-  //val numEdged = graph.numEdges
-  //val numVertices = graph.numVertices
-  //val triple = graph.triplets.collect()(38)
-  //println("\n Example de triplet : "+triple.toString()+"\n")
-
-  //println(fromUsers.mkString("\n"))
-  //println("\nUsers count :"+users.length+"\n")
-  //println("\nFrom users count :"+fromUsers.length+"\n")
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
   sc.stop()
 }
