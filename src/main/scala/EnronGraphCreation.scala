@@ -25,7 +25,7 @@ object EnronGraphCreation extends App{
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
-  val anonymousGroup = new ListBuffer[Array[String]]
+  val anonymousGroup = new ListBuffer[Array[Int]]
 
 
   // RFC Standard
@@ -59,8 +59,9 @@ object EnronGraphCreation extends App{
     }
       // else create an anonymous node and make a link from-node, node-tos
     else{
-      if (!anonymousGroup.contains(toArray)){
-        anonymousGroup.append(toArray)
+      val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _)
+      if (!anonymousGroup.contains(toArrayIntSorted)){
+        anonymousGroup.append(toArrayIntSorted)
       }
       listEdges.append((users.indexOf(from),anonymousGroup.indexOf(toArray)+10000,"to"))
       for (to <- toArray) {
@@ -82,8 +83,9 @@ object EnronGraphCreation extends App{
     }
     // else create an anonymous node and make a link from-node, node-ccs
     else{
-      if (!anonymousGroup.contains(ccArray)){
-        anonymousGroup.append(ccArray)
+      val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _)
+      if (!anonymousGroup.contains(ccArrayIntSorted)){
+        anonymousGroup.append(ccArrayIntSorted)
       }
       listEdges.append((users.indexOf(from),anonymousGroup.indexOf(ccArray)+10000,"to"))
       for (cc <- ccArray) {
@@ -111,8 +113,8 @@ object EnronGraphCreation extends App{
 
 
   // ShortestPaths to
-  val currentUser = 2
-  val dest = 0
+  val currentUser = 0
+  val dest = 2
   val result = ShortestPaths.run(graph, Seq(currentUser))
   val shortestPath = result               // result is a graph
     .vertices                             // we get the vertices RDD
@@ -122,7 +124,7 @@ object EnronGraphCreation extends App{
     .get(dest)
 
   val triplet = graph.triplets.collect()(25).toString()
-  //graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
+  graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
   //printings
 
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
