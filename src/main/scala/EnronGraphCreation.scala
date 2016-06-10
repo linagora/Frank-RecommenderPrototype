@@ -111,8 +111,8 @@ object EnronGraphCreation extends App{
 
 
   // ShortestPaths to
-  val currentUser = 0
-  val dest = 55
+  val currentUser = 2
+  val dest = 0
   val result = ShortestPaths.run(graph, Seq(currentUser))
   val shortestPath = result               // result is a graph
     .vertices                             // we get the vertices RDD
@@ -122,7 +122,7 @@ object EnronGraphCreation extends App{
     .get(dest)
 
   val triplet = graph.triplets.collect()(25).toString()
-  graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
+  //graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
   //printings
 
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
