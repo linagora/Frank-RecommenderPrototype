@@ -121,7 +121,10 @@ object EnronGraphCreation extends App{
     ._2                                   // the result is a tuple (v1, Map)
     .get(dest)
 
+  val triplet = graph.triplets.collect()(25).toString()
   //printings
+
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
+  println("\n triplet example :"+triplet+"\n")
   sc.stop()
 }
