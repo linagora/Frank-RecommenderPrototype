@@ -122,6 +122,7 @@ object EnronGraphCreation extends App{
     .get(dest)
 
   val triplet = graph.triplets.collect()(25).toString()
+  graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
   //printings
 
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
