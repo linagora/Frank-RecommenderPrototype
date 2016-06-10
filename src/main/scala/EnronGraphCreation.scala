@@ -25,7 +25,7 @@ object EnronGraphCreation extends App{
   val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
-  val anonymousGroup = new ListBuffer[Array[Int]]
+  val anonymousGroup = new ListBuffer[String]
 
 
   // RFC Standard
@@ -59,11 +59,11 @@ object EnronGraphCreation extends App{
     }
       // else create an anonymous node and make a link from-node, node-tos
     else{
-      val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _)
+      val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(toArrayIntSorted)){
         anonymousGroup.append(toArrayIntSorted)
       }
-      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(toArray)+10000,"to"))
+      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(toArrayIntSorted)+10000,"to"))
       for (to <- toArray) {
         listEdges.append((anonymousGroup.indexOf(toArray)+10000, users.indexOf(to), "to"))
       }
@@ -83,11 +83,11 @@ object EnronGraphCreation extends App{
     }
     // else create an anonymous node and make a link from-node, node-ccs
     else{
-      val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _)
+      val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(ccArrayIntSorted)){
         anonymousGroup.append(ccArrayIntSorted)
       }
-      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(ccArray)+10000,"to"))
+      listEdges.append((users.indexOf(from),anonymousGroup.indexOf(ccArrayIntSorted)+10000,"to"))
       for (cc <- ccArray) {
         listEdges.append((anonymousGroup.indexOf(ccArray)+10000, users.indexOf(cc), "to"))
       }
