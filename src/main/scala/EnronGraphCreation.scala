@@ -128,6 +128,7 @@ object EnronGraphCreation extends App{
   graph.collectNeighbors(EdgeDirection.Out)
 
   graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
+  graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
   //printings
 
   println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
