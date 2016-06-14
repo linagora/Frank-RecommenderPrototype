@@ -1,4 +1,5 @@
 import org.apache.spark.graphx._
+import org.apache.spark.graphx.lib.ShortestPaths
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -10,15 +11,26 @@ object EnronGraphAnalytics extends App{
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
     .setMaster("local[2]")
-    .setAppName("EnronCleanup")
+    .setAppName("EnronMailRecommendation")
   )
-
 
   val graph = GraphLoader.edgeListFile(sc,"hdfs://master.spark.com/Enron/GraphEdges")
 
+  val destid= 55
+  val senderId = 25
+  val id=  graph.edges
+    // Select the user dest user and the source user
+    .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId>9999)))
+    // Sort recipient users by number of exchange
+    .sortBy(_.attr)
+    .first().srcId
 
-  // printing tests
-  println("num edges = " + graph.numEdges)
-  println("num vertices = " + graph.numVertices)
-
+  if (id>9999) {
+    val recommendedUserArray = graph.edges
+      .filter(_.srcId == id).map(_.dstId).collect()
+    println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
+  }
+  else if (id == senderId){
+    println("\nSend direct Mail to "+id+"\n")
+  }
 }
