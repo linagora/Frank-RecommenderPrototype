@@ -30,7 +30,7 @@ object EnronGraphAnalytics extends App{
       .filter(_.srcId == id).map(_.dstId).collect()
     println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
   }
-  else if (id == senderId){
-    println("\nSend direct Mail to "+id+"\n")
+  else{
+    println("\nSend direct Mail to "+senderId+"\n")
   }
 }
