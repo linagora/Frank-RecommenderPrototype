@@ -52,13 +52,13 @@ object EnronGraphCreation extends App{
       toUser
     })
     // If there is just 1 to, make a direct link between from and to
-    if (toArray.length<2) {
+    if (toArray.length == 1) {
       for (to <- toArray) {
         listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
       }
     }
       // else create an anonymous node and make a link from-node, node-tos
-    else{
+    else if(toArray.length>1){
       val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(toArrayIntSorted)){
         anonymousGroup.append(toArrayIntSorted)
@@ -76,13 +76,13 @@ object EnronGraphCreation extends App{
       ccUser
     })
     // If there is just 1 to, make a direct link between from and cc
-    if (ccArray.length<2) {
+    if (ccArray.length==1) {
       for (cc <- ccArray) {
         listEdges.append((users.indexOf(from), users.indexOf(cc), "cc"))
       }
     }
     // else create an anonymous node and make a link from-node, node-ccs
-    else{
+    else if (ccArray.length > 1) {
       val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(ccArrayIntSorted)){
         anonymousGroup.append(ccArrayIntSorted)
@@ -114,7 +114,7 @@ object EnronGraphCreation extends App{
   //graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
   //graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
   graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
-  
+
   // sender = 0 dest = 2 direct mail
   // 4 to 11235
   val destid= 2
