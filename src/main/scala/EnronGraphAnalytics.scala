@@ -31,6 +31,6 @@ object EnronGraphAnalytics extends App{
     println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
   }
   else{
-    println("\nSend direct Mail to "+senderId+"\n")
+    println("\nSend direct Mail to "+destid+"\n")
   }
 }

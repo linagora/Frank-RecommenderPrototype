@@ -113,7 +113,10 @@ object EnronGraphCreation extends App{
 
   //graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
   //graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
-
+  graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
+  
+  // sender = 0 dest = 2 direct mail
+  // 4 to 11235
   val destid= 2
   val senderId = 0
   val id=  graph.edges
@@ -129,7 +132,7 @@ object EnronGraphCreation extends App{
     println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
   }
   else{
-    println("\nSend direct Mail to "+senderId+"\n")
+    println("\nSend direct Mail to "+destid+"\n")
   }
 
   //printings
