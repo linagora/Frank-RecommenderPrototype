@@ -111,27 +111,27 @@ object EnronGraphCreation extends App{
   val usersReceivedMails  : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.In)
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
+  //graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
+  //graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
 
-  // ShortestPaths to
-  val currentUser = 0
-  val dest = 2
-  val result = ShortestPaths.run(graph, Seq(currentUser))
-  val shortestPath = result               // result is a graph
-    .vertices                             // we get the vertices RDD
-    .filter({case(vId, _) => vId == currentUser})  // we filter to get only the shortest path from v1
-    .first                                // there's only one value
-    ._2                                   // the result is a tuple (v1, Map)
-    .get(dest)
+  val destid= 55
+  val senderId = 25
+  val id=  graph.edges
+    // Select the user dest user and the source user
+    .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId>9999)))
+    // Sort recipient users by number of exchange
+    .sortBy(_.attr)
+    .first().srcId
 
-  val triplet = graph.triplets.collect()(25).toString()
+  if (id>9999) {
+    val recommendedUserArray = graph.edges
+      .filter(_.srcId == id).map(_.dstId).collect()
+    println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
+  }
+  else if (id == senderId){
+    println("\nSend direct Mail to "+id+"\n")
+  }
 
-  graph.collectNeighbors(EdgeDirection.Out)
-
-  graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
-  graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
   //printings
-
-  println("\n Shortest path between "+currentUser+ " and "+dest+" is "+shortestPath.toString)
-  println("\n triplet example :"+triplet+"\n")
   sc.stop()
 }
