@@ -65,7 +65,7 @@ object EnronGraphCreation extends App{
       }
       listEdges.append((users.indexOf(from),anonymousGroup.indexOf(toArrayIntSorted)+10000,"to"))
       for (to <- toArray) {
-        listEdges.append((anonymousGroup.indexOf(toArray)+10000, users.indexOf(to), "to"))
+        listEdges.append((anonymousGroup.indexOf(toArrayIntSorted)+10000, users.indexOf(to), "to"))
       }
     }
     // We take care of the CC section
@@ -89,7 +89,7 @@ object EnronGraphCreation extends App{
       }
       listEdges.append((users.indexOf(from),anonymousGroup.indexOf(ccArrayIntSorted)+10000,"to"))
       for (cc <- ccArray) {
-        listEdges.append((anonymousGroup.indexOf(ccArray)+10000, users.indexOf(cc), "to"))
+        listEdges.append((anonymousGroup.indexOf(ccArrayIntSorted)+10000, users.indexOf(cc), "to"))
       }
     }
   })
@@ -117,7 +117,7 @@ object EnronGraphCreation extends App{
 
   // sender = 0 dest = 2 direct mail
   // 4 to 11235
-  val destid= 2
+  val destid= 10006
   val senderId = 0
   val id=  graph.edges
     // Select the user dest user and the source user
