@@ -112,12 +112,12 @@ object EnronGraphCreation extends App{
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
   //graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
-  //graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
-  //graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
+  graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
+  graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
 
   // sender = 0 dest = 2 direct mail
-  // 4 to 11235
-  val destid= 10006
+  // 4 to 10006
+  val destid= 41
   val senderId = 0
   val id=  graph.edges
     // Select the user dest user and the source user
@@ -126,6 +126,8 @@ object EnronGraphCreation extends App{
     .sortBy(_.attr)
     .first().srcId
 
+  val annonymousUserArray = graph.edges
+    .filter(_.srcId == 10006).map(_.dstId).collect()
   if (id>9999) {
     val recommendedUserArray = graph.edges
       .filter(_.srcId == id).map(_.dstId).collect()
@@ -134,9 +136,7 @@ object EnronGraphCreation extends App{
   else{
     println("\nSend direct Mail to "+destid+"\n")
   }
-  val recommendedUserArray = graph.edges
-    .filter(_.srcId == destid).map(_.dstId).collect()
-  println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
+  println("\n10006 anonymous user pointing to to send mails to : "+annonymousUserArray.mkString(" ; ")+"\n")
 
   //printings
   sc.stop()
