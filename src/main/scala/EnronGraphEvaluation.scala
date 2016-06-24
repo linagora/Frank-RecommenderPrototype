@@ -150,20 +150,23 @@ object EnronGraphEvaluation extends App{
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
-        val id = graph.edges
+        val tableGraph = graph.edges
           // Select the user dest user and the source user
           .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
           // Sort recipient users by number of exchange
           .sortBy(_.attr)
-          .first().srcId
+        if (tableGraph.count() > 0) {
+          val id = tableGraph
+            .first().srcId
 
-        val annonymousUserArray = graph.edges
-          .filter(_.srcId == 10006).map(_.dstId).collect()
-        if (id > 9999) {
-          val recommendedUserArray = graph.edges
-            .filter(_.srcId == id).map(_.dstId).collect()
-          if (recommendedUserArray.mkString("") == toArrayIntSorted) {
-            correctReco += 1
+          val annonymousUserArray = graph.edges
+            .filter(_.srcId == 10006).map(_.dstId).collect()
+          if (id > 9999) {
+            val recommendedUserArray = graph.edges
+              .filter(_.srcId == id).map(_.dstId).collect()
+            if (recommendedUserArray.mkString("") == toArrayIntSorted) {
+              correctReco += 1
+            }
           }
         }
       }
