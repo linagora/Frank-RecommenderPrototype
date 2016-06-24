@@ -9,11 +9,10 @@ import scala.util.matching.Regex
 
 
 import scala.collection.mutable.ListBuffer
-
 /**
-  * Created by frank on 01/06/16.
+  * Created by frank on 24/06/16.
   */
-object EnronGraphCreation extends App{
+object EnronGraphEvaluation extends App{
 
 
   // New SparkContext
@@ -22,7 +21,9 @@ object EnronGraphCreation extends App{
     .setAppName("EnronGraphCreation")
   )
 
-  val sentMails = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
+  val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
+  val weights = Array(.6,.4)
+  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.7,0.3))
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
   val anonymousGroup = new ListBuffer[String]
@@ -58,7 +59,7 @@ object EnronGraphCreation extends App{
         listEdges.append((users.indexOf(from), users.indexOf(to), "to"))
       }
     }
-      // else create an anonymous node and make a link from-node, node-tos
+    // else create an anonymous node and make a link from-node, node-tos
     else if(toArray.length>1){
       val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(toArrayIntSorted)){
@@ -111,34 +112,62 @@ object EnronGraphCreation extends App{
 
   val usersReceivedMails  : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.In)
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
+  
+  var correctReco =0
+  testSet.collect().foreach({mail =>
+    val fromLine = mail.split("\n").filter(line => line.contains("From: ")).head
+    val from: String = (mailPattern findFirstIn fromLine).get
+    val toLine = mail.split("\n").filter(line => line.contains("To: ")).head
+    val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
+    val toArray: Array[String] = (mailPattern findAllIn toLine).toArray
+    val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
+    val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
+    if (toArray.length > 1){
+      val to = toArray.head
+      val destid = users.indexOf(to)
+      val senderId = users.indexOf(from)
+      val id = graph.edges
+        // Select the user dest user and the source user
+        .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
+        // Sort recipient users by number of exchange
+        .sortBy(_.attr)
+        .first().srcId
 
-  //graph.edges.saveAsTextFile("hdfs://master.spark.com/Enron/GraphEdges")
-  //graph.vertices.saveAsTextFile("hdfs://master.spark.com/Enron/GraphVertices")
-  //graph.triplets.saveAsTextFile("hdfs://master.spark.com/Enron/GraphTriplets")
+      val annonymousUserArray = graph.edges
+        .filter(_.srcId == 10006).map(_.dstId).collect()
+      if (id > 9999) {
+        val recommendedUserArray = graph.edges
+          .filter(_.srcId == id).map(_.dstId).collect()
+        if (recommendedUserArray.mkString("") == toArrayIntSorted) {
+          correctReco += 1
+        }
+      }
+    }
+    if (ccArray.length > 1){
+      val cc = ccArray.head
+      val destid = users.indexOf(cc)
+      val senderId = users.indexOf(from)
+      val id = graph.edges
+        // Select the user dest user and the source user
+        .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
+        // Sort recipient users by number of exchange
+        .sortBy(_.attr)
+        .first().srcId
 
-  // sender = 0 dest = 2 direct mail
-  // 4 to 10006
-  val destid= 41
-  val senderId = 0
-  val id=  graph.edges
-    // Select the user dest user and the source user
-    .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId>9999)))
-    // Sort recipient users by number of exchange
-    .sortBy(_.attr)
-    .first().srcId
+      val annonymousUserArray = graph.edges
+        .filter(_.srcId == 10006).map(_.dstId).collect()
+      if (id > 9999) {
+        val recommendedUserArray = graph.edges
+          .filter(_.srcId == id).map(_.dstId).collect()
+        if (recommendedUserArray.mkString("") == toArrayIntSorted) {
+          correctReco += 1
+        }
+      }
+    }
+  })
+  val testSetSize= testSet.count()
+  println("\n Accuracy of the recommender: "+correctReco/testSetSize+" with : "+correctReco+" correct guesses on "+testSetSize+" mails in test set")
 
-  val annonymousUserArray = graph.edges
-    .filter(_.srcId == 10006).map(_.dstId).collect()
-  if (id>9999) {
-    val recommendedUserArray = graph.edges
-      .filter(_.srcId == id).map(_.dstId).collect()
-    println("\nRecommend to send mails to : "+recommendedUserArray.mkString(" ; ")+"\n")
-  }
-  else{
-    println("\nSend direct Mail to "+destid+"\n")
-  }
-  println("\n10006 anonymous user pointing to to send mails to : "+annonymousUserArray.mkString(" ; ")+"\n")
-
-  //printings
-  sc.stop()
+//printings
+sc.stop()
 }
