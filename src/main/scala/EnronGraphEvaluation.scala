@@ -61,6 +61,7 @@ object EnronGraphEvaluation extends App{
     }
     // else create an anonymous node and make a link from-node, node-tos
     else if(toArray.length>1){
+      // TODO : Add from in toArray
       val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(toArrayIntSorted)){
         anonymousGroup.append(toArrayIntSorted)
@@ -85,6 +86,7 @@ object EnronGraphEvaluation extends App{
     }
     // else create an anonymous node and make a link from-node, node-ccs
     else if (ccArray.length > 1) {
+      // TODO : Add from in ccArray
       val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(ccArrayIntSorted)){
         anonymousGroup.append(ccArrayIntSorted)
@@ -110,7 +112,7 @@ object EnronGraphEvaluation extends App{
   // Create the Graph
   val graph = Graph(usersRDD,edgesRDD, "defaultProperty")
 
-  val graphTriangle = graph.triangleCount()
+  val graphTriangle = graph//.triangleCount()
 
   var correctReco = 0
   var totalGroupMail = 0
@@ -121,8 +123,11 @@ object EnronGraphEvaluation extends App{
     val toLine = mail.split("\n").filter(line => line.contains("To: ")).head
     val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
     val toArray: Array[String] = (mailPattern findAllIn toLine).toArray
+    // TODO : Add from in toArray for toArrayIntSorted
     val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
+    // TODO : Add from in ccArray for ccArrayIntSorted
+    val ccArrayIntSorted = ccArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
     if (toArray.length > 1) {
       totalGroupMail+=1
       val to = toArray.head
@@ -166,7 +171,7 @@ object EnronGraphEvaluation extends App{
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
-            if (recommendedUserArray.mkString("") == toArrayIntSorted) {
+            if (recommendedUserArray.mkString("") == ccArrayIntSorted) {
               correctReco += 1
             }
           }
