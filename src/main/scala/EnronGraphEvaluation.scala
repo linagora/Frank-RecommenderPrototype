@@ -138,7 +138,7 @@ object EnronGraphEvaluation extends App{
         .first().srcId
 
         val annonymousUserArray = graphTriangle.edges
-          .filter(_.srcId == 10006).map(_.dstId).collect()
+          .filter(_.srcId == id).map(_.dstId).collect()
         if (id > 9999) {
           val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
@@ -162,7 +162,7 @@ object EnronGraphEvaluation extends App{
             .first().srcId
 
           val annonymousUserArray = graphTriangle.edges
-            .filter(_.srcId == 10006).map(_.dstId).collect()
+            .filter(_.srcId == id).map(_.dstId).collect()
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
