@@ -110,8 +110,7 @@ object EnronGraphEvaluation extends App{
   // Create the Graph
   val graph = Graph(usersRDD,edgesRDD, "defaultProperty")
 
-  val usersReceivedMails  : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.In)
-  val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
+  val graphTriangle = graph.triangleCount()
 
   var correctReco = 0
   var totalGroupMail = 0
@@ -129,7 +128,7 @@ object EnronGraphEvaluation extends App{
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
-      val tableGraph = graph.edges
+      val tableGraph = graphTriangle.edges
         // Select the user dest user and the source user
         .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
         // Sort recipient users by number of exchange
@@ -138,10 +137,10 @@ object EnronGraphEvaluation extends App{
         val id = tableGraph
         .first().srcId
 
-        val annonymousUserArray = graph.edges
+        val annonymousUserArray = graphTriangle.edges
           .filter(_.srcId == 10006).map(_.dstId).collect()
         if (id > 9999) {
-          val recommendedUserArray = graph.edges
+          val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
           if (recommendedUserArray.mkString("") == toArrayIntSorted) {
             correctReco += 1
@@ -153,7 +152,7 @@ object EnronGraphEvaluation extends App{
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
-        val tableGraph = graph.edges
+        val tableGraph = graphTriangle.edges
           // Select the user dest user and the source user
           .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
           // Sort recipient users by number of exchange
@@ -162,10 +161,10 @@ object EnronGraphEvaluation extends App{
           val id = tableGraph
             .first().srcId
 
-          val annonymousUserArray = graph.edges
+          val annonymousUserArray = graphTriangle.edges
             .filter(_.srcId == 10006).map(_.dstId).collect()
           if (id > 9999) {
-            val recommendedUserArray = graph.edges
+            val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
             if (recommendedUserArray.mkString("") == toArrayIntSorted) {
               correctReco += 1
