@@ -113,7 +113,8 @@ object EnronGraphEvaluation extends App{
   val usersReceivedMails  : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.In)
   val usersSentMails      : VertexRDD[Array[VertexId]] = graph.collectNeighborIds(EdgeDirection.Out)
 
-  var correctReco =0
+  var correctReco = 0
+  var totalGroupMail = 0
 
   testSet.collect().foreach({mail =>
     val fromLine = mail.split("\n").filter(line => line.contains("From: ")).head
@@ -124,6 +125,7 @@ object EnronGraphEvaluation extends App{
     val toArrayIntSorted = toArray.map(users.indexOf(_)).sortWith(_ < _).mkString("")
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
     if (toArray.length > 1) {
+      totalGroupMail+=1
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
@@ -147,6 +149,7 @@ object EnronGraphEvaluation extends App{
         }
       }
       if (ccArray.length > 1) {
+        totalGroupMail+=1
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
@@ -173,7 +176,7 @@ object EnronGraphEvaluation extends App{
     }
   })
   val testSetSize= testSet.count()
-  println("\n Accuracy of the recommender: "+correctReco/testSetSize+" with : "+correctReco+" correct guesses on "+testSetSize+" mails in test set")
+  println("\n Accuracy of the recommender: "+(correctReco.toLong/testSetSize.toLong).toLong+" with : "+correctReco+" correct guesses on "+totalGroupMail+" mails in test set")
 
 //printings
 sc.stop()
