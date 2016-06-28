@@ -147,7 +147,7 @@ object EnronGraphEvaluation extends App{
         if (id > 9999) {
           val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
-          if (recommendedUserArray.mkString("") == toArrayIntSorted) {
+          if (recommendedUserArray.sortWith(_ < _).mkString("") == toArrayIntSorted) {
             correctReco += 1
           }
         }
@@ -171,7 +171,7 @@ object EnronGraphEvaluation extends App{
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
-            if (recommendedUserArray.mkString("") == ccArrayIntSorted) {
+            if (recommendedUserArray.sortWith(_ < _).mkString("") == ccArrayIntSorted) {
               correctReco += 1
             }
           }
