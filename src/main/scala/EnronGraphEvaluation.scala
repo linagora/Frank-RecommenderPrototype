@@ -62,7 +62,7 @@ object EnronGraphEvaluation extends App{
     // else create an anonymous node and make a link from-node, node-tos
     else if(toArray.length>1){
       // TODO : Add from in toArray: OK
-      val toArrayIntSorted = (toArray.map(users.indexOf(_)):+users.indexOf(from)).sortWith(_ < _).mkString("")
+      val toArrayIntSorted:String = (toArray.map(users.indexOf(_)) :+ users.indexOf(from)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(toArrayIntSorted)){
         anonymousGroup.append(toArrayIntSorted)
       }
@@ -87,7 +87,7 @@ object EnronGraphEvaluation extends App{
     // else create an anonymous node and make a link from-node, node-ccs
     else if (ccArray.length > 1) {
       // TODO : Add from in ccArray
-      val ccArrayIntSorted = (ccArray.map(users.indexOf(_)):+users.indexOf(from)).sortWith(_ < _).mkString("")
+      val ccArrayIntSorted = (ccArray.map(users.indexOf(_)) :+ users.indexOf(from)).sortWith(_ < _).mkString("")
       if (!anonymousGroup.contains(ccArrayIntSorted)){
         anonymousGroup.append(ccArrayIntSorted)
       }
@@ -124,10 +124,10 @@ object EnronGraphEvaluation extends App{
     val ccLine = mail.split("\n").filter(line => line.contains("cc: ")).head
     val toArray: Array[String] = (mailPattern findAllIn toLine).toArray
     // TODO : Add from in toArray for toArrayIntSorted
-    val toArrayIntSorted = (toArray.map(users.indexOf(_)):+users.indexOf(from)).sortWith(_ < _).mkString("")
+    val toArrayIntSorted = (toArray.map(users.indexOf(_)) :+ users.indexOf(from)).sortWith(_ < _).mkString("")
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
     // TODO : Add from in ccArray for ccArrayIntSorted
-    val ccArrayIntSorted = (ccArray.map(users.indexOf(_)):+users.indexOf(from)).sortWith(_ < _).mkString("")
+    val ccArrayIntSorted = (ccArray.map(users.indexOf(_)) :+ users.indexOf(from)).sortWith(_ < _).mkString("")
     if (toArray.length > 1) {
       totalGroupMail+=1
       val to = toArray.head
