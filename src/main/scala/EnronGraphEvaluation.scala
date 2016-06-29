@@ -17,7 +17,7 @@ object EnronGraphEvaluation extends App{
 
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
-    .setMaster("local[2]")
+    .setMaster("local[8]")
     .setAppName("EnronGraphCreation")
   )
 
