@@ -23,7 +23,7 @@ object EnronGraphEvaluation extends App{
 
   val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val weights = Array(.6,.4)
-  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.25,0.75))
+  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.7,0.3))
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
   val anonymousGroup = new ListBuffer[String]
@@ -114,7 +114,7 @@ object EnronGraphEvaluation extends App{
 
   val graphTriangle = graph//.triangleCount()
 
-  var correctReco = 0
+  var correctReco = 0.0
   var totalGroupMail = 0
 
   testSet.collect().foreach({mail =>
@@ -147,9 +147,18 @@ object EnronGraphEvaluation extends App{
         if (id > 9999) {
           val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
+          var mailCorrectReco = 0
+          for (users <- recommendedUserArray){
+            if (toArray.contains(users)){
+              mailCorrectReco+=1
+            }
+          }
+          correctReco+= (mailCorrectReco/toArray.length)
+         /* Reco tout ou rien
           if (recommendedUserArray.sortWith(_ < _).mkString("") == toArrayIntSorted) {
             correctReco += 1
           }
+          */
         }
       }
       if (ccArray.length > 1) {
@@ -171,9 +180,18 @@ object EnronGraphEvaluation extends App{
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
+            var mailCorrectReco = 0
+            for (users <- recommendedUserArray){
+              if (ccArray.contains(users)){
+                mailCorrectReco+=1
+              }
+            }
+            correctReco+= (mailCorrectReco/toArray.length)
+            /* Reco tout ou rien
             if (recommendedUserArray.sortWith(_ < _).mkString("") == ccArrayIntSorted) {
               correctReco += 1
             }
+            */
           }
         }
       }
