@@ -129,6 +129,7 @@ object EnronGraphEvaluation extends App{
     // TODO : Add from in ccArray for ccArrayIntSorted
     val ccArrayIntSorted = (ccArray.map(users.indexOf(_))).sortWith(_ < _).mkString("")
     if (toArray.length > 3) {
+      totalGroupMail+=toArray.length
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
@@ -137,7 +138,7 @@ object EnronGraphEvaluation extends App{
         .filter(row => (row.dstId == destid && (row.srcId == senderId || row.srcId > 9999)))
         // Sort recipient users by number of exchange
         .sortBy(_.attr)
-      if (tableGraph.count() > 0) {
+      if (tableGraph.count() > 1) {
         val id = tableGraph
         .first().srcId
 
@@ -151,7 +152,6 @@ object EnronGraphEvaluation extends App{
               correctReco+=1
             }
           }
-          totalGroupMail+=toArray.length
          /* Reco tout ou rien
           if (recommendedUserArray.sortWith(_ < _).mkString("") == toArrayIntSorted) {
             correctReco += 1
@@ -159,8 +159,8 @@ object EnronGraphEvaluation extends App{
           */
         }
       }
-      if (ccArray.length > 3) {
-        totalGroupMail+=1
+      if (ccArray.length > 1) {
+        totalGroupMail+=toArray.length
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
@@ -183,7 +183,6 @@ object EnronGraphEvaluation extends App{
                 correctReco+=1
               }
             }
-            totalGroupMail+=toArray.length
             /* Reco tout ou rien
             if (recommendedUserArray.sortWith(_ < _).mkString("") == ccArrayIntSorted) {
               correctReco += 1
