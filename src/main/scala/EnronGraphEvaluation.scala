@@ -112,7 +112,7 @@ object EnronGraphEvaluation extends App{
   // Create the Graph
   val graph = Graph(usersRDD,edgesRDD, "defaultProperty")
 
-  val graphTriangle = graph//.triangleCount()
+  val graphTriangle = graph.triangleCount()
 
   var correctReco = 0
   var totalGroupMail = 0
