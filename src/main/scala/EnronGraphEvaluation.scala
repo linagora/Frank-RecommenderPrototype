@@ -128,7 +128,7 @@ object EnronGraphEvaluation extends App{
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
     // TODO : Add from in ccArray for ccArrayIntSorted
     val ccArrayIntSorted = (ccArray.map(users.indexOf(_))).sortWith(_ < _).mkString("")
-    if (toArray.length > 3) {
+    if (toArray.length > 1) {
       totalGroupMail+=toArray.length
       val to = toArray.head
       val destid = users.indexOf(to)
@@ -160,7 +160,7 @@ object EnronGraphEvaluation extends App{
         }
       }
       if (ccArray.length > 1) {
-        totalGroupMail+=toArray.length
+        totalGroupMail+=ccArray.length
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
