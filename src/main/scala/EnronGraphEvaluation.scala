@@ -146,8 +146,8 @@ object EnronGraphEvaluation extends App{
         if (id > 9999) {
           val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
-          for (users <- recommendedUserArray){
-            if (toArray.contains(users)){
+          for (to <- toArray){
+            if (recommendedUserArray.contains(users.indexOf(to))){
               correctReco+=1
             }
           }
@@ -178,8 +178,8 @@ object EnronGraphEvaluation extends App{
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
-            for (users <- recommendedUserArray){
-              if (ccArray.contains(users)){
+            for (cc <- ccArray){
+              if (recommendedUserArray.contains(users.indexOf(cc))){
                 correctReco+=1
               }
             }
@@ -195,7 +195,7 @@ object EnronGraphEvaluation extends App{
     }
   })
   val testSetSize= testSet.count()
-  println("\n Accuracy of the recommender: "+(correctReco.toLong/testSetSize.toLong).toLong+" with : "+correctReco+" correct guesses on "+totalGroupMail+" mails in test set")
+  println("\n Accuracy of the recommender: "+(correctReco.toLong/testSetSize.toLong).toLong+" with : "+correctReco+" correct guesses on "+totalGroupMail+" recipients in test set")
 
 //printings
 sc.stop()
