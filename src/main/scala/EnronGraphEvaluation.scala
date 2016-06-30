@@ -114,7 +114,7 @@ object EnronGraphEvaluation extends App{
 
   val graphTriangle = graph//.triangleCount()
 
-  var correctReco = 0.0
+  var correctReco = 0
   var totalGroupMail = 0
 
   testSet.collect().foreach({mail =>
@@ -129,7 +129,6 @@ object EnronGraphEvaluation extends App{
     // TODO : Add from in ccArray for ccArrayIntSorted
     val ccArrayIntSorted = (ccArray.map(users.indexOf(_))).sortWith(_ < _).mkString("")
     if (toArray.length > 1) {
-      totalGroupMail+=1
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
@@ -147,13 +146,12 @@ object EnronGraphEvaluation extends App{
         if (id > 9999) {
           val recommendedUserArray = graphTriangle.edges
             .filter(_.srcId == id).map(_.dstId).collect()
-          var mailCorrectReco = 0
           for (users <- recommendedUserArray){
             if (toArray.contains(users)){
-              mailCorrectReco+=1
+              correctReco+=1
             }
           }
-          correctReco+= (mailCorrectReco/toArray.length)
+          totalGroupMail+=toArray.length
          /* Reco tout ou rien
           if (recommendedUserArray.sortWith(_ < _).mkString("") == toArrayIntSorted) {
             correctReco += 1
@@ -180,13 +178,12 @@ object EnronGraphEvaluation extends App{
           if (id > 9999) {
             val recommendedUserArray = graphTriangle.edges
               .filter(_.srcId == id).map(_.dstId).collect()
-            var mailCorrectReco = 0
             for (users <- recommendedUserArray){
               if (ccArray.contains(users)){
-                mailCorrectReco+=1
+                correctReco+=1
               }
             }
-            correctReco+= (mailCorrectReco/toArray.length)
+            totalGroupMail+=toArray.length
             /* Reco tout ou rien
             if (recommendedUserArray.sortWith(_ < _).mkString("") == ccArrayIntSorted) {
               correctReco += 1
