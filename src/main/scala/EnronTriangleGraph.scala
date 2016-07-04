@@ -7,7 +7,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * Created by frank on 04/07/16.
   */
-class EnronTriangleGraph extends App {
+object EnronTriangleGraph extends App {
 
 
   // New SparkContext
@@ -94,13 +94,14 @@ class EnronTriangleGraph extends App {
   })
 
   val tripleRDD : RDD[(Int,Int,String)] = sc.parallelize(listEdges)
-
+  // Replace arc string by count we use 1 to get shortest path to
+  val triplesArcRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1,triple._2,1))
 
   val userArray :Array[(Long,(String))]= users.toArray.map(mail => (users.indexOf(mail).toLong,(users(users.indexOf(mail)))))
   val usersRDD: RDD[(VertexId, (String))] = sc.parallelize(userArray.toSeq)
 
   //Create Triples Edges
-  val edgesRDD = tripleRDD.map(triple => Edge(triple._1,triple._2.hashCode,triple._3))
+  val edgesRDD = triplesArcRDD.map(triple => Edge(triple._1,triple._2,triple._3))
 
   // Create the Graph
   val graph = Graph(usersRDD,edgesRDD, "defaultProperty")
