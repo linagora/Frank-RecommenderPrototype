@@ -95,7 +95,7 @@ object EnronTriangleGraph extends App {
 
   val tripleRDD : RDD[(Int,Int,String)] = sc.parallelize(listEdges)
   // Replace arc string by count we use 1 to get shortest path to
-  val triplesArcRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1,triple._2,1))
+  val triplesArcRDD:RDD[(Int,Int,Int)] = tripleRDD.map(triple =>(triple._1,triple._2,-1))
 
   val userArray :Array[(Long,(String))]= users.toArray.map(mail => (users.indexOf(mail).toLong,(users(users.indexOf(mail)))))
   val usersRDD: RDD[(VertexId, (String))] = sc.parallelize(userArray.toSeq)
