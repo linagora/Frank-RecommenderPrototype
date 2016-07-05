@@ -22,7 +22,7 @@ object EnronGraphEvaluation extends App{
   )
 
   val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
-  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.7,0.3))
+  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.9,0.1))
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
   val anonymousGroup = new ListBuffer[String]
