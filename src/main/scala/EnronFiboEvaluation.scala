@@ -17,7 +17,7 @@ object EnronFiboEvaluation extends App{
   )
 
   val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
-  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.9,0.1))
+  val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.7,0.3))
   val users = new ListBuffer[String]
   val fromUsers = new ListBuffer[String]
   val anonymousGroup = new ListBuffer[String]
@@ -129,7 +129,7 @@ object EnronFiboEvaluation extends App{
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
     // TODO : Add from in ccArray for ccArrayIntSorted
     val ccArrayIntSorted = (ccArray.map(users.indexOf(_))).sortWith(_ < _).mkString("")
-    if (toArray.length > 3) {
+    if (toArray.length > 1) {
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
@@ -155,7 +155,7 @@ object EnronFiboEvaluation extends App{
           totalGroupMail+=toArray.length
         }
       }
-      if (ccArray.length > 3) {
+      if (ccArray.length > 1) {
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)
