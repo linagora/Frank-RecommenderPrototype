@@ -5,15 +5,19 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   * Created by frank on 13/06/16.
+  *
+  * Load graph form HDFS, loses of email string information only ids
   */
 object EnronGraphAnalytics extends App{
 
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
-    .setMaster("local[2]")
-    .setAppName("EnronMailRecommendation")
+    // local 8 means local machine 8 threads, optimal with 8 core CPU
+    // yarn-local : on the cluster with local machine as master and default output terminal
+    // yarn-cluster : on the cluster with best setup but no output on terminal, must look at logs of each machine
+    .setMaster("local[8]")
+    .setAppName("EnronGraphAnalytics")
   )
-
   val graph = GraphLoader.edgeListFile(sc,"hdfs://master.spark.com/Enron/GraphEdges")
 
   val destid= 55

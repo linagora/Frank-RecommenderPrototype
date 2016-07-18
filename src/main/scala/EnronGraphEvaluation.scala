@@ -17,9 +17,12 @@ object EnronGraphEvaluation extends App{
 
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
-    .setMaster("local[8]")
-    .setAppName("EnronGraphCreation")
-  )
+      // local 8 means local machine 8 threads, optimal with 8 core CPU
+      // yarn-local : on the cluster with local machine as master and default output terminal
+      // yarn-cluster : on the cluster with best setup but no output on terminal, must look at logs of each machine
+      .setMaster("local[8]")
+      .setAppName("EnronGraphEvaluation")
+    )
 
   val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
   val Array(sentMails,testSet) = mailDataset.randomSplit(Array(0.9,0.1))
@@ -125,7 +128,8 @@ object EnronGraphEvaluation extends App{
     val ccArray: Array[String] = (mailPattern findAllIn ccLine).toArray
     // TODO : Add from in ccArray for ccArrayIntSorted
     val ccArrayIntSorted = (ccArray.map(users.indexOf(_))).sortWith(_ < _).mkString("")
-    if (toArray.length > 3) {
+    // Size of the "to" group to consider for evaluation
+    if (toArray.length > 1) {
       val to = toArray.head
       val destid = users.indexOf(to)
       val senderId = users.indexOf(from)
@@ -156,7 +160,8 @@ object EnronGraphEvaluation extends App{
            */
         }
       }
-      if (ccArray.length > 3) {
+      // Size of the "cc" group to consider for evaluation
+      if (ccArray.length > 1) {
         val cc = ccArray.head
         val destid = users.indexOf(cc)
         val senderId = users.indexOf(from)

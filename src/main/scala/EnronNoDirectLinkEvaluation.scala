@@ -14,8 +14,11 @@ object EnronNoDirectLinkEvaluation extends App{
 
   // New SparkContext
   val sc = new SparkContext(new SparkConf()
+    // local 8 means local machine 8 threads, optimal with 8 core CPU
+    // yarn-local : on the cluster with local machine as master and default output terminal
+    // yarn-cluster : on the cluster with best setup but no output on terminal, must look at logs of each machine
     .setMaster("local[8]")
-    .setAppName("EnronGraphCreation")
+    .setAppName("EnronNoDirectLinkGraphEvaluation")
   )
 
   val mailDataset = sc.wholeTextFiles("hdfs://master.spark.com/Enron/maildir/*/_sent_mail/*").map(_._2)
